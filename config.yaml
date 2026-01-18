@@ -1,0 +1,63 @@
+# AI Model Configuration
+llm:
+  api_key: "sk-d6deef2262284ed8904d8c2e8d788fa9"
+  base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1"
+  model_name: "qwen3-max"
+
+# Search Configuration
+search:
+  # Allocation Strategy
+  total_news: 50           # Total News Items Desired (Target)
+  min_per_core_source: 3   # Minimum items guaranteed for each enabled Core Source
+
+  timeout: 60
+
+  # News Sources Pool
+  news_sources:
+    # ----------------------------------------------------------------------------
+    # Core Sources: High authority. AI will guarantee min_per_core_source.
+    # ----------------------------------------------------------------------------
+    core:
+      enabled: true
+      items:
+        google_news:
+          enabled: true
+          # Google News fetched via RSS
+          match_names: ["Google News"]
+        
+        tencent:
+          enabled: true
+          search_query: "site:qq.com"
+          match_names: ["腾讯新闻", "腾讯网"]
+          
+        sina:
+          enabled: true
+          search_query: "site:sina.com.cn"
+          match_names: ["新浪新闻", "新浪网"]
+          
+        toutiao:
+          enabled: true
+          search_query: "site:toutiao.com"
+          match_names: ["今日头条"]
+
+    # ----------------------------------------------------------------------------
+    # Other Sources: Generic engines or dynamic pool.
+    # AI will allocate remaining quota here based on relevance.
+    # ----------------------------------------------------------------------------
+    other:
+      enabled: true
+      items:
+        duckduckgo_search:
+          enabled: true
+          match_names: ["DuckDuckGo"]
+
+# Proxy Configuration
+proxy:
+  http: "http://127.0.0.1:7897"
+  https: "http://127.0.0.1:7897"
+
+# Output Configuration
+output:
+  # Log Level: INFO (default) or DEBUG
+  log_level: "INFO"
+  directory: "./docs"
