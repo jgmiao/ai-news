@@ -143,7 +143,7 @@ search:
 通过设置 `NEWS_TOPIC` 变量实现无交互运行。
 
 ```bash
-export NEWS_TOPIC="生成式 AI"
+export NEWS_TOPIC="AI Agent"
 ./run.sh
 
 ```

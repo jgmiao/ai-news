@@ -132,7 +132,7 @@ Pass the topic directly as an argument.
 Set the `NEWS_TOPIC` environment variable.
 
 ```bash
-export NEWS_TOPIC="Generative AI"
+export NEWS_TOPIC="AI Agent"
 ./run.sh
 
 ```

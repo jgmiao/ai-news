@@ -17,6 +17,7 @@ def setup_logging():
     logging.getLogger("urllib3").setLevel(logging.WARNING)
     logging.getLogger("curl_cffi").setLevel(logging.WARNING)
     logging.getLogger("duckduckgo_search").setLevel(logging.WARNING)
+    logging.getLogger("ddgs").setLevel(logging.WARNING)
     logging.getLogger("primp").setLevel(logging.WARNING)
 
 def setup_proxy(config: dict):

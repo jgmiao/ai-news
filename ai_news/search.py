@@ -28,7 +28,11 @@ def log_retry_attempt(retry_state):
     else:
         msg = ex_str
         
-    logging.warning(f"🔄 Retrying {retry_state.fn.__name__} due to error: {msg} (Attempt {retry_state.attempt_number}/3)...")
+    # User requested: "Query exceptions, tell me it is retrying"
+    if "timed out" in ex_str.lower():
+         logging.debug(f"⏳ Timeout (Retrying...): {retry_state.fn.__name__}")
+    else:
+         logging.info(f"🔄 Connection Issue (Retrying...): {retry_state.fn.__name__} - {msg}")
 
 retry_strategy = retry(
     stop=stop_after_attempt(3), 
@@ -232,7 +236,7 @@ def search_news(topic: str, config: Dict[str, Any], planned_tasks: Optional[List
                 data = future.result(timeout=remaining)
                 all_results.extend(data)
             except concurrent.futures.TimeoutError:
-                logging.warning(f"⚠️ Fetching {source_name} timed out after {timeout} seconds. Skipping.")
+                logging.debug(f"⚠️ Fetching {source_name} timed out after {timeout} seconds. Skipping.")
                 future.cancel() # Try to cancel
             except Exception as exc:
                 msg = str(exc)
@@ -261,7 +265,13 @@ def search_news(topic: str, config: Dict[str, Any], planned_tasks: Optional[List
     gap = total_target - current_count
     
     if gap > 0:
-        logging.warning(f"⚠️ Quota not met ({current_count}/{total_target}). Triggering fallback search for {gap} items...")
+        # Optimization: If we have > 90% of target (e.g. 45/50), or gap is small (< 3), just proceed.
+        threshold = max(int(total_target * 0.9), total_target - 2)
+        
+        if current_count >= threshold:
+             logging.info(f"✅ Quota nearly met ({current_count}/{total_target}). Proceeding with current results.")
+        else:
+             logging.warning(f"⚠️ Quota not met ({current_count}/{total_target}). Triggering fallback search for {gap} items...")
         try:
             # Use general search to fill the gap. Buffer slightly +2 to ensure robust fill.
             fill_count = gap + 2 
